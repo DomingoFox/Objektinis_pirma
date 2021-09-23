@@ -14,6 +14,7 @@ struct info
     vector<double> nd_rezultatai;
 };
 
+
 void Skaityk(vector<info> &studentas, double &n)
 {
     double temp;
@@ -41,7 +42,29 @@ void Skaityk(vector<info> &studentas, double &n)
         studentas.push_back(info());
         cout << "Iveskite " << i + 1 << "-ojo studento varda ir pavarde" << endl;
         cin >> studentas[i].vardas >> studentas[i].pavarde;
-
+        cin.clear();
+        cin.ignore(10000, '\n');
+        string atsitiktinai;
+        cout << "Ar balai uz namu darbus ir egzamina sitam studentui turetu buti generuojami atsitiktinai? y(yes)/n(no)" << endl;
+        cin >> atsitiktinai;
+        if (atsitiktinai == "y" || atsitiktinai == "yes" || atsitiktinai == "Y")
+        {
+            int nd_ivertinimu_sk = 5;
+            int min = 1;
+            int max = 10;
+            cout << "Sugeneruoti ivertinimai: ND:";
+            for (int j = 0; j < nd_ivertinimu_sk; j++)
+            {
+                int random_ivertinimas = min + (rand() % (max - min + 1));
+                cout << random_ivertinimas << " ";
+                studentas[i].nd_rezultatai.push_back(random_ivertinimas);
+            }
+            int random_ivertinimas = min + (rand() % (max - min + 1));
+            studentas[i].egz_rezultatas = random_ivertinimas;
+            cout << "egzamino: " << random_ivertinimas << endl;
+            continue;
+        }
+        
 
         cout << "Iveskite studento ivertinimus (neteisinga ivestis uzbaigia procesa): " << endl;
         while (cin >> temp)
@@ -77,8 +100,15 @@ void Galutinis_balas(vector<info> &studentas, double &n)
         {
             nd_suma += studentas[i].nd_rezultatai[j];
         }
-        double vidurkis = nd_suma / studentas[i].nd_rezultatai.size();
-        studentas[i].galutinis = 0.4 * vidurkis + 0.6 * studentas[i].egz_rezultatas;
+        if (studentas[i].nd_rezultatai.size() == 0)
+        {
+            studentas[i].galutinis = 0.6 * studentas[i].egz_rezultatas;
+        }
+        else
+        {
+            double vidurkis = nd_suma / studentas[i].nd_rezultatai.size();
+            studentas[i].galutinis = 0.4 * vidurkis + 0.6 * studentas[i].egz_rezultatas;
+        }
     }
     return;
 }
@@ -93,11 +123,19 @@ void Mediana(vector<info> &studentas, double &n)
     for (int i = 0; i < n; i++)
     {
         int ilgis = studentas[i].nd_rezultatai.size();
-        if (studentas[i].nd_rezultatai.size() % 2 == 1)
-            studentas[i].mediana = studentas[i].nd_rezultatai[ilgis / 2];
+
+        if (ilgis == 0)
+        {
+            studentas[i].galutinis_mediana = 0.6 * studentas[i].egz_rezultatas;
+        }
         else
-            studentas[i].mediana = (studentas[i].nd_rezultatai[ilgis / 2 - 1] + studentas[i].nd_rezultatai[ilgis / 2]) / 2;
-        studentas[i].galutinis_mediana = 0.4 * studentas[i].mediana + 0.6 * studentas[i].egz_rezultatas;
+        {
+            if (studentas[i].nd_rezultatai.size() % 2 == 1)
+                studentas[i].mediana = studentas[i].nd_rezultatai[ilgis / 2];
+            else
+                studentas[i].mediana = (studentas[i].nd_rezultatai[ilgis / 2 - 1] + studentas[i].nd_rezultatai[ilgis / 2]) / 2;
+            studentas[i].galutinis_mediana = 0.4 * studentas[i].mediana + 0.6 * studentas[i].egz_rezultatas;
+        }
     }
     return;
 }
