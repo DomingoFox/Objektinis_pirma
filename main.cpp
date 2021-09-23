@@ -7,7 +7,7 @@ using namespace std;
 struct info
 {
     string vardas, pavarde;
-    double nd_rezultatai[101], egz_rezultatas, galutinis;
+    double nd_rezultatai[101], egz_rezultatas, galutinis, mediana;
 };
 
 void Skaityk(info studentas[101], int &n, int &namu_darbu_sk)
@@ -51,25 +51,52 @@ void Galutinis_balas(info studentas[101], int &n, int &namu_darbu_sk)
     return;
 }
 
-/*void Mediana(info studentas[101], int &n, int &namu_darbu_sk)
+void Mediana(info studentas[101], int &n, int &namu_darbu_sk)
 {
     for(int i=0; i<n; i++)
     {
         for(int j=0; j<namu_darbu_sk; j++)
         {
-
-
+            for(int z=0; z<namu_darbu_sk; z++)
+            {
+                if(studentas[i].nd_rezultatai[j] > studentas[i].nd_rezultatai[z])
+                {
+                    swap(studentas[i].nd_rezultatai[j], studentas[i].nd_rezultatai[z]);
+                }
+            }
         }
     }
-}*/
+    for(int i=0; i<n; i++)
+    {
+        if(namu_darbu_sk % 2 == 1)
+            studentas[i].mediana = studentas[i].nd_rezultatai[namu_darbu_sk/2];
+        else
+            studentas[i].mediana = (studentas[i].nd_rezultatai[namu_darbu_sk/2-1] + studentas[i].nd_rezultatai[namu_darbu_sk/2])/2;
+    }
+}
 
 void Rasyk(info studentas[101], int &n)
 {
-    cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Vid.)" <<endl;
-    cout << "-------------------------------------------------------------" <<endl;
-    for(int i=0; i<n; i++)
+    string isvedimas;
+    cout<<"Ar isvesti vidurki(v) ar mediana(m)?"<<endl;
+    cin>>isvedimas;
+    if(isvedimas == "v" || isvedimas == "vidurkis" || isvedimas == "vidurki")
     {
-        cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis <<endl;;
+        cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Vid.)/Galutinis (Med.)" <<endl;
+        cout << "-------------------------------------------------------------" <<endl;
+        for(int i=0; i<n; i++)
+        {
+            cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis <<endl;
+        }
+    }
+    else
+    {
+        cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Vid.)/Galutinis (Med.)" <<endl;
+        cout << "-------------------------------------------------------------" <<endl;
+        for(int i=0; i<n; i++)
+        {
+            cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].mediana <<endl;
+        }
     }
 
     return;
@@ -83,8 +110,9 @@ int main()
 
     Skaityk(studentas,n,namu_darbu_sk);
     Galutinis_balas(studentas,n,namu_darbu_sk);
+    Mediana(studentas,n,namu_darbu_sk);
     Rasyk(studentas,n);
-    cout<<"hello"<<endl;
 
     return 0;
 }
+
