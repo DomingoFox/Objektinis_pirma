@@ -1,90 +1,143 @@
 
 #include <iomanip>
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <typeinfo>
 
 using namespace std;
 
 struct info
 {
     string vardas, pavarde;
-    double nd_rezultatai[101], egz_rezultatas, galutinis;
+    double egz_rezultatas, galutinis, mediana, galutinis_mediana;
+    vector<double> nd_rezultatai;
 };
 
-void Skaityk(info studentas[101], int &n, int &namu_darbu_sk)
+void Skaityk(vector<info> &studentas, double &n)
 {
-    cout << "Iveskite studentu skaiciu: " <<endl;
+    double temp;
+    
+    cout << "Iveskite studentu skaiciu: " << endl;
     cin >> n;
-
-    cout << "Kiek namu darbu ivertinimu turejo studentai?" << endl;
-    cin >> namu_darbu_sk;
-    for(int i=0; i<n ; i++)
+    
+    while (cin.fail() || n < 0 || (int) n != n)
+    {   
+        cin.clear();
+        cin.ignore(10000, '\n');
+        cout << "Neteisinga ivestis!" << endl;
+        cout << "Iveskite studentu skaiciu: " << endl;
+        cin >> n;
+    }
+    
+    if (n == 0)
     {
-        cout << "Iveskite " << i+1 << "-ojo studento varda ir pavarde" << endl;
-        cin >> studentas[i].vardas >> studentas[i].pavarde;
-
-        cout << "Iveskite studento ivertinimus: " <<endl;
-        for(int j=0; j<namu_darbu_sk; j++)
-        {
-            cin >> studentas[i].nd_rezultatai[j];
-        }
-
-        cout << "Iveskite " << i+1 << "-ojo studento egzamino rezultata" << endl;
-        cin >> studentas[i].egz_rezultatas;
+        cout << "Nera studentu duomenu" << endl;
+        exit(0);
     }
 
+    for (int i = 0; i < n; i++)
+    {   
+        studentas.push_back(info());
+        cout << "Iveskite " << i + 1 << "-ojo studento varda ir pavarde" << endl;
+        cin >> studentas[i].vardas >> studentas[i].pavarde;
+
+
+        cout << "Iveskite studento ivertinimus (neteisinga ivestis uzbaigia procesa): " << endl;
+        while (cin >> temp)
+        {   
+            if (temp < 0 || temp>10 || cin.fail())
+                break;
+            studentas[i].nd_rezultatai.push_back(temp);
+        }
+        cin.clear();
+        cin.ignore(10000, '\n');
+
+
+        cout << "Iveskite " << i + 1 << "-ojo studento egzamino rezultata" << endl;
+        cin >> studentas[i].egz_rezultatas;
+        while (cin.fail() || studentas[i].egz_rezultatas < 0 || studentas[i].egz_rezultatas>10)
+        {   
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "Neteisinga ivestis, iveskite egzamino rezultata dar karta: " << endl;
+            cin >> studentas[i].egz_rezultatas;
+        }
+    }
     return;
 }
 
-void Galutinis_balas(info studentas[101], int &n, int &namu_darbu_sk)
-{
-    for(int i=0; i<n; i++)
+void Galutinis_balas(vector<info> &studentas, double &n)
+{   
+    
+    for (int i = 0; i < n; i++)
     {
         double nd_suma = 0;
-        for(int j=0; j<namu_darbu_sk; j++)
+        for (int j = 0; j < studentas[i].nd_rezultatai.size(); j++)
         {
             nd_suma += studentas[i].nd_rezultatai[j];
         }
-        double vidurkis = nd_suma/namu_darbu_sk;
+        double vidurkis = nd_suma / studentas[i].nd_rezultatai.size();
         studentas[i].galutinis = 0.4 * vidurkis + 0.6 * studentas[i].egz_rezultatas;
     }
-
     return;
 }
 
-/*void Mediana(info studentas[101], int &n, int &namu_darbu_sk)
-{
-    for(int i=0; i<n; i++)
+void Mediana(vector<info> &studentas, double &n)
+{   
+    for (int i = 0; i < n; i++)
     {
-        for(int j=0; j<namu_darbu_sk; j++)
+        sort(studentas[i].nd_rezultatai.begin(), studentas[i].nd_rezultatai.end());
+    }
+    
+    for (int i = 0; i < n; i++)
+    {
+        int ilgis = studentas[i].nd_rezultatai.size();
+        if (studentas[i].nd_rezultatai.size() % 2 == 1)
+            studentas[i].mediana = studentas[i].nd_rezultatai[ilgis / 2];
+        else
+            studentas[i].mediana = (studentas[i].nd_rezultatai[ilgis / 2 - 1] + studentas[i].nd_rezultatai[ilgis / 2]) / 2;
+        studentas[i].galutinis_mediana = 0.4 * studentas[i].mediana + 0.6 * studentas[i].egz_rezultatas;
+    }
+    return;
+}
+
+void Rasyk(vector<info> &studentas, double &n)
+{   
+    string isvedimas;
+    cout << "Ar isvesti pagal vidurki(v) ar mediana(m)?" << endl;
+    cin >> isvedimas;
+    if (isvedimas == "v" || isvedimas == "vidurkis" || isvedimas == "vidurki")
+    {
+        cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Vid.)" << endl;
+        cout << "-------------------------------------------------------------" << endl;
+        for (int i = 0; i < n; i++)
         {
-
-
+            cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis << endl;
         }
     }
-}*/
-
-void Rasyk(info studentas[101], int &n)
-{
-    cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Vid.)" <<endl;
-    cout << "-------------------------------------------------------------" <<endl;
-    for(int i=0; i<n; i++)
+    else
     {
-        cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis <<endl;;
+        cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Med.)" << endl;
+        cout << "-------------------------------------------------------------" << endl;
+        for (int i = 0; i < n; i++)
+        {
+            cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
+        }
     }
-
     return;
 }
 
 
 int main()
 {
-    int n, namu_darbu_sk;
-    info studentas[101];
-
-    Skaityk(studentas,n,namu_darbu_sk);
-    Galutinis_balas(studentas,n,namu_darbu_sk);
-    Rasyk(studentas,n);
-    cout<<"hello"<<endl;
+    double n;
+    vector<info> studentas;
+    
+    Skaityk(studentas, n);
+    Galutinis_balas(studentas, n);
+    Mediana(studentas, n);
+    Rasyk(studentas, n);
 
     return 0;
 }
