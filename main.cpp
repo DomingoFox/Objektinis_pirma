@@ -20,6 +20,9 @@ using std::left;
 using std::ifstream;
 using std::getline;
 using std::swap;
+using std::ofstream;
+using std::stringstream;
+using std::ws;
 
 struct info
 {
@@ -28,56 +31,63 @@ struct info
     vector<double> nd_rezultatai;
 };
 
-void Skaityk_faila(vector<info>& studentas, double& n)
-{   
-    string filename_pattern = "kursiokai.txt";
-    string line;
-    int number_of_words = 0;
-
-    ifstream fd(filename_pattern); 
-
-    getline(fd, line);
-   
-    for (int i = 0; i < line.length(); i++)
-    {   
-        int temp = 0;
-        int count = 0;
-        while (line[i]) {
-            if (line[i] == ' ' || line[i] == '\n' || line[i] == '\t') {
-                temp = 0;
-            }
-            else if (temp == 0) {
-                temp = 1;
-                count++;
-            }
-            i++;
-        }
-        number_of_words = count - 2;
-    }
-    int i = 0;
-    string temp;
-    int count_lines = 0;
-    while (!fd.eof())
-    {   
-        count_lines++;
-        studentas.resize(studentas.size() + 1);
-        fd >> studentas[i].pavarde >> studentas[i].vardas;
-        for (int j = 0;j < number_of_words ;j++)
-        {
-            fd >> temp;
-            studentas[i].nd_rezultatai.push_back(stoi(temp));
-        }
-        i++;
-    }
-
-    n = count_lines;
+unsigned int zodziu_stringe(std::string const& str)
+{
+    stringstream stream(str);
+    return distance(std::istream_iterator<string>(stream), std::istream_iterator<string>());
 }
 
-void Rusiuok(vector<info>& studentas, double& n)
-{
-    for (int i = 0; i < n; i++)
+void Skaityk_faila(vector<info>& studentas, int *pazymiu_sk)
+{   
+    string line;
+    int studentu = 0;
+    int temp;
+
+    ifstream fd;
+    fd.open("studentai10000.txt.txt");
+        
+    getline(fd >> ws, line);
+    *pazymiu_sk = zodziu_stringe(line) - 3;
+    if (fd.is_open())
+    {   
+        while (true)
+        {
+
+            studentas.resize(studentas.size() + 1);
+            fd >> studentas.at(studentu).vardas;
+            if (fd.eof())
+            {
+                studentas.pop_back();
+                break;
+            }
+
+            fd >> studentas.at(studentu).pavarde;
+            for (int i = 0; i < *pazymiu_sk; i++)
+            {
+                fd >> temp;
+                studentas.at(studentu).nd_rezultatai.push_back(temp);
+            }
+            fd >> studentas.at(studentu).egz_rezultatas;
+            studentu++;
+        }
+    }
+    else
     {
-        for (int j = 0; j < n; j++)
+        cout << "Nepavyko atidaryti failo" << endl;
+        cout << "Galimai reikia prideti .txt prie pavadinimo kode" << endl;
+        exit(1);
+    }
+    cout << "Duomenys nuskaityti is failo" << endl;
+}
+    
+
+
+void Rusiuok(vector<info>& studentas)
+{   
+    cout << "Duomenys rusiuojami" << endl;
+    for (int i = 0; i < studentas.size(); i++)
+    {
+        for (int j = 0; j < studentas.size(); j++)
         {
             if (studentas[i].pavarde < studentas[j].pavarde)
             {   
@@ -87,85 +97,11 @@ void Rusiuok(vector<info>& studentas, double& n)
     }
 }
 
-void Skaityk(vector<info> &studentas, double &n)
-{
-    double temp;
-    
-    cout << "Iveskite studentu skaiciu: " << endl;
-    cin >> n;
-    
-    while (cin.fail() || n < 0 || (int) n != n)
-    {   
-        cin.clear();
-        cin.ignore(10000, '\n');
-        cout << "Neteisinga ivestis!" << endl;
-        cout << "Iveskite studentu skaiciu: " << endl;
-        cin >> n;
-    }
-    
-    if (n == 0)
-    {
-        cout << "Nera studentu duomenu" << endl;
-        exit(1);
-    }
 
-    for (int i = 0; i < n; i++)
-    {   
-        studentas.push_back(info());
-        cout << "Iveskite " << i + 1 << "-ojo studento varda ir pavarde" << endl;
-        cin >> studentas[i].vardas >> studentas[i].pavarde;
-        cin.clear();
-        cin.ignore(10000, '\n');
-        string atsitiktinai;
-        cout << "Ar balai uz namu darbus ir egzamina sitam studentui turetu buti generuojami atsitiktinai? y(yes)/n(no)" << endl;
-        cin >> atsitiktinai;
-        if (atsitiktinai == "y" || atsitiktinai == "yes" || atsitiktinai == "Y")
-        {
-            int nd_ivertinimu_sk = 5;
-            int min = 1;
-            int max = 10;
-            cout << "Sugeneruoti ivertinimai: ND:";
-            for (int j = 0; j < nd_ivertinimu_sk; j++)
-            {
-                int random_ivertinimas = min + (rand() % (max - min + 1));
-                cout << random_ivertinimas << " ";
-                studentas[i].nd_rezultatai.push_back(random_ivertinimas);
-            }
-            int random_ivertinimas = min + (rand() % (max - min + 1));
-            studentas[i].egz_rezultatas = random_ivertinimas;
-            cout << "egzamino: " << random_ivertinimas << endl;
-            continue;
-        }
-        
-
-        cout << "Iveskite studento ivertinimus (neteisinga ivestis uzbaigia procesa): " << endl;
-        while (cin >> temp)
-        {   
-            if (temp < 0 || temp>10 || cin.fail())
-                break;
-            studentas[i].nd_rezultatai.push_back(temp);
-        }
-        cin.clear();
-        cin.ignore(10000, '\n');
-
-
-        cout << "Iveskite " << i + 1 << "-ojo studento egzamino rezultata" << endl;
-        cin >> studentas[i].egz_rezultatas;
-        while (cin.fail() || studentas[i].egz_rezultatas < 0 || studentas[i].egz_rezultatas>10)
-        {   
-            cin.clear();
-            cin.ignore(10000, '\n');
-            cout << "Neteisinga ivestis, iveskite egzamino rezultata dar karta: " << endl;
-            cin >> studentas[i].egz_rezultatas;
-        }
-    }
-    return;
-}
-
-void Galutinis_balas(vector<info> &studentas, double &n)
+void Galutinis_balas(vector<info> &studentas)
 {   
     
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < studentas.size(); i++)
     {
         double nd_suma = 0;
         for (int j = 0; j < studentas[i].nd_rezultatai.size(); j++)
@@ -185,14 +121,12 @@ void Galutinis_balas(vector<info> &studentas, double &n)
     return;
 }
 
-void Mediana(vector<info> &studentas, double &n)
+void Mediana(vector<info> &studentas)
 {   
-    for (int i = 0; i < n; i++)
-    {
+    for(int i=0; i<studentas.size();i++)
         sort(studentas[i].nd_rezultatai.begin(), studentas[i].nd_rezultatai.end());
-    }
     
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < studentas.size(); i++)
     {
         int ilgis = studentas[i].nd_rezultatai.size();
 
@@ -212,15 +146,17 @@ void Mediana(vector<info> &studentas, double &n)
     return;
 }
 
-void Rasyk(vector<info> &studentas, double &n)
+void Rasyk_i_faila(vector<info> &studentas, int pazymiu_sk)
 {   
-    cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
-    cout << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
-    cout << "-------------------------------------------------------------------------------" << endl;
-    for (int i = 0; i < n; i++)
+    cout << "Pradedamas duomenu rasymas i faila" << endl;
+    ofstream fr("rezultatai.txt");
+    fr << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
+    fr << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
+    fr << "-------------------------------------------------------------------------------" << endl;
+    for (int i = 0; i < studentas.size(); i++)
     {
-        cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
-        cout << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
+        fr << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
+        fr << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
     } 
     return;
 }
@@ -228,15 +164,14 @@ void Rasyk(vector<info> &studentas, double &n)
 
 int main()
 {
-    double n;
+    int pazymiu_sk;
     vector<info> studentas;
     
-    Skaityk_faila(studentas, n);
-    //Skaityk(studentas, n);
-    Galutinis_balas(studentas, n);
-    Mediana(studentas,n);
-    Rusiuok(studentas,n);
-    Rasyk(studentas,n);
+    Skaityk_faila(studentas, &pazymiu_sk);
+    Galutinis_balas(studentas);
+    Mediana(studentas);
+    Rusiuok(studentas);
+    Rasyk_i_faila(studentas,pazymiu_sk);
 
     return 0;
 }
