@@ -4,6 +4,9 @@
 #include <vector>
 #include <algorithm>
 #include <typeinfo>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 using std::cout;
 using std::cin;
@@ -14,6 +17,7 @@ using std::string;
 using std::vector;
 using std::endl;
 using std::left;
+using namespace std;
 
 struct info
 {
@@ -22,6 +26,51 @@ struct info
     vector<double> nd_rezultatai;
 };
 
+void Skaityk_faila(vector<info>& studentas, double& n)
+{   
+    string filename_pattern = "kursiokai.txt";
+    string line;
+    int number_of_words;
+
+    ifstream fd(filename_pattern); 
+
+    getline(fd, line);
+   
+    for (int i = 0; i < line.length(); i++)
+    {   
+        int temp = 0;
+        int count = 0;
+        while (line[i]) {
+            if (line[i] == ' ' || line[i] == '\n' || line[i] == '\t') {
+                temp = 0;
+            }
+            else if (temp == 0) {
+                temp = 1;
+                count++;
+            }
+            i++;
+        }
+        number_of_words = count - 2;
+    }
+    
+    int i = 0;
+    string temp;
+    int count_lines = 0;
+    while (!fd.eof())
+    {   
+        count_lines++;
+        studentas.resize(studentas.size() + 1);
+        fd >> studentas[i].pavarde >> studentas[i].vardas;
+        for (int j = 0;j < number_of_words ;j++)
+        {
+            fd >> temp;
+            studentas[i].nd_rezultatai.push_back(stoi(temp));
+        }
+        i++;
+    }
+
+    n = count_lines;
+}
 
 void Skaityk(vector<info> &studentas, double &n)
 {
@@ -42,7 +91,7 @@ void Skaityk(vector<info> &studentas, double &n)
     if (n == 0)
     {
         cout << "Nera studentu duomenu" << endl;
-        exit(0);
+        exit(1);
     }
 
     for (int i = 0; i < n; i++)
@@ -180,10 +229,12 @@ int main()
     double n;
     vector<info> studentas;
     
-    Skaityk(studentas, n);
+    Skaityk_faila(studentas, n);
+    //Skaityk(studentas, n);
     Galutinis_balas(studentas, n);
     Mediana(studentas, n);
     Rasyk(studentas, n);
 
     return 0;
 }
+
