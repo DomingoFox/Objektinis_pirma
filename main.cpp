@@ -17,7 +17,8 @@ using std::string;
 using std::vector;
 using std::endl;
 using std::left;
-using namespace std;
+using std::ifstream;
+using std::getline;
 
 struct info
 {
@@ -52,7 +53,7 @@ void Skaityk_faila(vector<info>& studentas, double& n)
         }
         number_of_words = count - 2;
     }
-    
+    int help = number_of_words;
     int i = 0;
     string temp;
     int count_lines = 0;
@@ -61,7 +62,7 @@ void Skaityk_faila(vector<info>& studentas, double& n)
         count_lines++;
         studentas.resize(studentas.size() + 1);
         fd >> studentas[i].pavarde >> studentas[i].vardas;
-        for (int j = 0;j < number_of_words ;j++)
+        for (int j = 0;j < help ;j++)
         {
             fd >> temp;
             studentas[i].nd_rezultatai.push_back(stoi(temp));
@@ -199,27 +200,14 @@ void Mediana(vector<info> &studentas, double &n)
 
 void Rasyk(vector<info> &studentas, double &n)
 {   
-    string isvedimas;
-    cout << "Ar isvesti pagal vidurki(v) ar mediana(m)?" << endl;
-    cin >> isvedimas;
-    if (isvedimas == "v" || isvedimas == "vidurkis" || isvedimas == "vidurki")
+    cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
+    cout << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
+    cout << "-------------------------------------------------------------------------------" << endl;
+    for (int i = 0; i < n; i++)
     {
-        cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Vid.)" << endl;
-        cout << "-------------------------------------------------------------" << endl;
-        for (int i = 0; i < n; i++)
-        {
-            cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis << endl;
-        }
-    }
-    else
-    {
-        cout << left << setw(20) << "Pavarde" << setw(20) << "Vardas" << setw(20) << "Galutinis (Med.)" << endl;
-        cout << "-------------------------------------------------------------" << endl;
-        for (int i = 0; i < n; i++)
-        {
-            cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
-        }
-    }
+        cout << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
+        cout << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
+    } 
     return;
 }
 
@@ -237,4 +225,3 @@ int main()
 
     return 0;
 }
-
