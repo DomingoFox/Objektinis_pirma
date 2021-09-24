@@ -48,8 +48,9 @@ void Skaityk_faila(vector<info>& studentas, int *pazymiu_sk)
         
     getline(fd >> ws, line);
     *pazymiu_sk = zodziu_stringe(line) - 3;
+    cout << fd.is_open() << endl;
     if (fd.is_open())
-    {   
+    {
         while (true)
         {
 
@@ -81,20 +82,14 @@ void Skaityk_faila(vector<info>& studentas, int *pazymiu_sk)
 }
     
 
+bool pagalba_rusiavimui(const info &kaire, const info &desine)
+{
+    return kaire.vardas < desine.vardas;
+}
 
 void Rusiuok(vector<info>& studentas)
-{   
-    cout << "Duomenys rusiuojami" << endl;
-    for (int i = 0; i < studentas.size(); i++)
-    {
-        for (int j = 0; j < studentas.size(); j++)
-        {
-            if (studentas[i].pavarde < studentas[j].pavarde)
-            {   
-                swap(studentas[j], studentas[i]);
-            }
-        }
-    }
+{
+    sort(studentas.begin(), studentas.end(), pagalba_rusiavimui);
 }
 
 
