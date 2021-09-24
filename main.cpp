@@ -19,6 +19,7 @@ using std::endl;
 using std::left;
 using std::ifstream;
 using std::getline;
+using std::swap;
 
 struct info
 {
@@ -31,7 +32,7 @@ void Skaityk_faila(vector<info>& studentas, double& n)
 {   
     string filename_pattern = "kursiokai.txt";
     string line;
-    int number_of_words;
+    int number_of_words = 0;
 
     ifstream fd(filename_pattern); 
 
@@ -53,7 +54,6 @@ void Skaityk_faila(vector<info>& studentas, double& n)
         }
         number_of_words = count - 2;
     }
-    int help = number_of_words;
     int i = 0;
     string temp;
     int count_lines = 0;
@@ -62,7 +62,7 @@ void Skaityk_faila(vector<info>& studentas, double& n)
         count_lines++;
         studentas.resize(studentas.size() + 1);
         fd >> studentas[i].pavarde >> studentas[i].vardas;
-        for (int j = 0;j < help ;j++)
+        for (int j = 0;j < number_of_words ;j++)
         {
             fd >> temp;
             studentas[i].nd_rezultatai.push_back(stoi(temp));
@@ -71,6 +71,20 @@ void Skaityk_faila(vector<info>& studentas, double& n)
     }
 
     n = count_lines;
+}
+
+void Rusiuok(vector<info>& studentas, double& n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            if (studentas[i].pavarde < studentas[j].pavarde)
+            {   
+                swap(studentas[j], studentas[i]);
+            }
+        }
+    }
 }
 
 void Skaityk(vector<info> &studentas, double &n)
@@ -220,8 +234,9 @@ int main()
     Skaityk_faila(studentas, n);
     //Skaityk(studentas, n);
     Galutinis_balas(studentas, n);
-    Mediana(studentas, n);
-    Rasyk(studentas, n);
+    Mediana(studentas,n);
+    Rusiuok(studentas,n);
+    Rasyk(studentas,n);
 
     return 0;
 }
