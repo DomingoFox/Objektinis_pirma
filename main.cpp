@@ -211,22 +211,40 @@ void Mediana(vector<info>& studentas, int &studentu_skaicius)
 void Rasyk_i_faila(vector<info>& studentas, int pazymiu_sk, int &studentu_skaicius)
 {   
     auto start = high_resolution_clock::now();
-    string failo_pavadinimas = to_string(studentu_skaicius) + "_studentu_rez" + ".txt";
-    ofstream fr(failo_pavadinimas);
-    fr << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
-    fr << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
-    fr << "-------------------------------------------------------------------------------" << endl;
+    
+    string failo_pavadinimas_vargseliai = "rezultatai/" + to_string(studentu_skaicius) + "_vargseliu_rez" + ".txt";
+    string failo_pavadinimas_kietiakai = "rezultatai/" + to_string(studentu_skaicius) + "_kietiakiu_rez" + ".txt";
+
+
+    ofstream frvarg(failo_pavadinimas_vargseliai);
+    ofstream frkiet(failo_pavadinimas_kietiakai);
+
+
+    frvarg << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
+    frvarg << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
+    frvarg << "-------------------------------------------------------------------------------" << endl;
+    frkiet << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
+    frkiet << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
+    frkiet << "-------------------------------------------------------------------------------" << endl;
     for (int i = 0; i < studentas.size(); i++)
-    {
-        fr << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
-        fr << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
+    {   
+        if (studentas[i].galutinis < 5) {
+            frvarg << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
+            frvarg << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
+        }
+        else {
+            frkiet << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
+            frkiet << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
+        }
     }
+
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     double time_taken_in_seconds = duration.count() / 1000000.0;
     cout << "Duomenu rasymo i faila su " << studentu_skaicius << " studentu trukme: " << time_taken_in_seconds << " s" << endl;
     cout << endl;
-    fr.close();
+    frvarg.close();
+    frkiet.close();
     return;
 }
 
