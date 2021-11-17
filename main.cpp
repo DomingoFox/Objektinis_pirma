@@ -44,7 +44,7 @@ void Sugeneruok_failus()
 {   
     int nd_skaicius = 5;
     const int failu_kiekis = 5;
-    int studentu_skaicius[failu_kiekis] = { 1000, 10000, 100000, 1000000, 10000000};
+    int studentu_skaicius[failu_kiekis] = {1000, 10000, 100000, 1000000, 10000000};
 
     for(int x = 0; x<failu_kiekis ;x++){
         auto start = high_resolution_clock::now();
@@ -208,34 +208,53 @@ void Mediana(vector<info>& studentas, int &studentu_skaicius)
     return;
 }
 
-void Rasyk_i_faila(vector<info>& studentas, int pazymiu_sk, int &studentu_skaicius)
+void vargsiukai_kietiakai(vector<info>& studentas, int pazymiu_sk, int& studentu_skaicius, vector<info>& vargsiukai, vector<info>& kietiakai)
+{
+    auto start = high_resolution_clock::now();
+    for (int i = 0; i < studentas.size(); i++)
+    {
+        if (studentas[i].galutinis < 5)
+        {
+            vargsiukai.push_back(studentas[i]);
+        }
+        else
+        {
+            kietiakai.push_back(studentas[i]);
+        }
+    }
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    double time_taken_in_seconds = duration.count() / 1000000.0;
+    cout << "Vargsiuku ir kietiaku rasymas i dvieju tipo konteineriu su " << studentu_skaicius << " studentu, trukme: " << time_taken_in_seconds << " s" << endl;
+}
+
+void Rasyk_i_faila(vector<info>& studentas, int pazymiu_sk, int &studentu_skaicius, vector<info>& vargsiukai, vector<info>& kietiakai)
 {   
     auto start = high_resolution_clock::now();
     
     string failo_pavadinimas_vargseliai = "rezultatai/" + to_string(studentu_skaicius) + "_vargseliu_rez" + ".txt";
     string failo_pavadinimas_kietiakai = "rezultatai/" + to_string(studentu_skaicius) + "_kietiakiu_rez" + ".txt";
 
-
     ofstream frvarg(failo_pavadinimas_vargseliai);
     ofstream frkiet(failo_pavadinimas_kietiakai);
-
-
+    
     frvarg << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
     frvarg << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
     frvarg << "-------------------------------------------------------------------------------" << endl;
     frkiet << left << setw(20) << "Pavarde" << setw(20) << "Vardas";
     frkiet << setw(20) << "Galutinis (Vid.)" << setw(20) << "Galutinis (Med.)" << endl;
     frkiet << "-------------------------------------------------------------------------------" << endl;
-    for (int i = 0; i < studentas.size(); i++)
-    {   
-        if (studentas[i].galutinis < 5) {
-            frvarg << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
-            frvarg << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
-        }
-        else {
-            frkiet << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
-            frkiet << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
-        }
+ 
+    for (int i = 0; i < vargsiukai.size(); i++)
+    {
+        frvarg << fixed << left << setw(20) << vargsiukai[i].pavarde << setw(20) << vargsiukai[i].vardas;
+        frvarg << setw(20) << setprecision(2) << vargsiukai[i].galutinis << setw(20) << setprecision(2) << vargsiukai[i].galutinis_mediana << endl;
+    }
+
+    for (int i = 0; i < kietiakai.size(); i++)
+    {
+        frkiet << fixed << left << setw(20) << kietiakai[i].pavarde << setw(20) << kietiakai[i].vardas;
+        frkiet << setw(20) << setprecision(2) << kietiakai[i].galutinis << setw(20) << setprecision(2) << kietiakai[i].galutinis_mediana << endl;
     }
 
     auto stop = high_resolution_clock::now();
@@ -253,14 +272,17 @@ int main()
 {
     int pazymiu_sk;
     vector<info> studentas;
-    int studentu_skaicius = 10000;
+    vector<info> vargsiukai;
+    vector<info> kietiakai;
+    int studentu_skaicius = 1000000;
 
     //Sugeneruok_failus();
     Skaityk_faila(studentas, &pazymiu_sk,studentu_skaicius);
     Galutinis_balas(studentas, studentu_skaicius);
     Mediana(studentas,studentu_skaicius);
     Rusiuok(studentas,studentu_skaicius);
-    Rasyk_i_faila(studentas, pazymiu_sk,studentu_skaicius);
+    vargsiukai_kietiakai(studentas, pazymiu_sk, studentu_skaicius, vargsiukai, kietiakai);
+    Rasyk_i_faila(studentas, pazymiu_sk,studentu_skaicius,vargsiukai,kietiakai);
 
     return 0;
 }
