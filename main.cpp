@@ -8,6 +8,8 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <typeinfo>
+#include <list>
 
 using std::cout;
 using std::cin;
@@ -26,6 +28,7 @@ using std::stringstream;
 using std::ws;
 using std::to_string;
 using namespace std::chrono;
+using std::list;
 
 struct info
 {
@@ -208,27 +211,26 @@ void Mediana(vector<info>& studentas, int &studentu_skaicius)
     return;
 }
 
-void vargsiukai_kietiakai(vector<info>& studentas, int pazymiu_sk, int& studentu_skaicius, vector<info>& vargsiukai, vector<info>& kietiakai)
+void vargsiukai_kietiakai(vector<info>& studentas, int pazymiu_sk, int& studentu_skaicius, vector<info>& vargsiukai)
 {
     auto start = high_resolution_clock::now();
-    for (int i = 0; i < studentas.size(); i++)
+    for (int i = 0; i <=studentas.size(); i++)
     {
         if (studentas[i].galutinis < 5)
         {
             vargsiukai.push_back(studentas[i]);
-        }
-        else
-        {
-            kietiakai.push_back(studentas[i]);
+            studentas.erase(studentas.begin() + i);
+            i--;
         }
     }
+
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     double time_taken_in_seconds = duration.count() / 1000000.0;
-    cout << "Vargsiuku ir kietiaku rasymas i dvieju tipo konteineriu su " << studentu_skaicius << " studentu, trukme: " << time_taken_in_seconds << " s" << endl;
+    cout << "Vargsiuku rasymas ir trynimas is studentu failo su " << studentu_skaicius << " studentu, trukme: " << time_taken_in_seconds << " s" << endl;
 }
 
-void Rasyk_i_faila(vector<info>& studentas, int pazymiu_sk, int &studentu_skaicius, vector<info>& vargsiukai, vector<info>& kietiakai)
+void Rasyk_i_faila(vector<info>& studentas, int pazymiu_sk, int &studentu_skaicius, vector<info>& vargsiukai)
 {   
     auto start = high_resolution_clock::now();
     
@@ -251,10 +253,10 @@ void Rasyk_i_faila(vector<info>& studentas, int pazymiu_sk, int &studentu_skaici
         frvarg << setw(20) << setprecision(2) << vargsiukai[i].galutinis << setw(20) << setprecision(2) << vargsiukai[i].galutinis_mediana << endl;
     }
 
-    for (int i = 0; i < kietiakai.size(); i++)
+    for (int i = 0; i < studentas.size(); i++)
     {
-        frkiet << fixed << left << setw(20) << kietiakai[i].pavarde << setw(20) << kietiakai[i].vardas;
-        frkiet << setw(20) << setprecision(2) << kietiakai[i].galutinis << setw(20) << setprecision(2) << kietiakai[i].galutinis_mediana << endl;
+        frkiet << fixed << left << setw(20) << studentas[i].pavarde << setw(20) << studentas[i].vardas;
+        frkiet << setw(20) << setprecision(2) << studentas[i].galutinis << setw(20) << setprecision(2) << studentas[i].galutinis_mediana << endl;
     }
 
     auto stop = high_resolution_clock::now();
@@ -274,15 +276,16 @@ int main()
     vector<info> studentas;
     vector<info> vargsiukai;
     vector<info> kietiakai;
-    int studentu_skaicius = 1000000;
+    int studentu_skaicius = 100000;
 
     //Sugeneruok_failus();
     Skaityk_faila(studentas, &pazymiu_sk,studentu_skaicius);
     Galutinis_balas(studentas, studentu_skaicius);
     Mediana(studentas,studentu_skaicius);
     Rusiuok(studentas,studentu_skaicius);
-    vargsiukai_kietiakai(studentas, pazymiu_sk, studentu_skaicius, vargsiukai, kietiakai);
-    Rasyk_i_faila(studentas, pazymiu_sk,studentu_skaicius,vargsiukai,kietiakai);
+    vargsiukai_kietiakai(studentas, pazymiu_sk, studentu_skaicius, vargsiukai);
+    Rasyk_i_faila(studentas, pazymiu_sk,studentu_skaicius,vargsiukai);
+
 
     return 0;
 }
